@@ -1,0 +1,12 @@
+# Ignore vim temporary files
+*~
+*.swp
+
+# Ignore log files
+*.log
+
+# Ignore environment variables
+*.env
+
+# Python bytecode
+__pycache__
