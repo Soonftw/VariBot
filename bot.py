@@ -1,64 +1,58 @@
-
 # -*- coding: utf-8 -*-
-
 # bot.py
 
 import os
-import discord
 import random
 from dotenv import load_dotenv
+from discord.ext import commands
+import discord
 
 load_dotenv()
+
 TOKEN = os.getenv("DISCORD_TOKEN")
-GUILD = os.getenv("DISCORD_GUILD")
+GUILD = os.getenv("TEST_GUILD")
+CHANNEL = os.getenv("TEST_CHANNEL")
+intents = discord.Intents.default()
+intents.members = True
 
-client = discord.Client()
+bot = commands.Bot(command_prefix="!", intents=intents)
 
-@client.event
+
+
+@bot.event
 async def on_ready():
-
-    guild = discord.utils.get(client.guilds, name=GUILD)
-
+    guild = discord.utils.get(bot.guilds, name=GUILD)
+    guild.fetch_members() 
+    members = '\n - '.join([member.name for member in guild.members])
+    await bot.change_presence(status=discord.Status.idle, activity=discord.Game("World of Warcraft")) 
     print(
-        f"{client.user} is connected to the following guild:\n"
-        f"{guild.name} (id: {guild.id})\n"
+        f'{bot.user} is connected to the following guild:\n'
+        f'{guild.name}(id: {guild.id})\n'
+        f'Guild Members:\n - {members}'
     )
+    mem = guild.members
+    for i in mem:
+        print(str(i))
 
-    members = "\n - ".join([member.name for member in guild.members])
-    print(f"Guild Members: \n - {members}")
+@bot.command(name='roll_dice', help='Simulates rolling dice.')
+async def roll(ctx, number_of_dice :int, number_of_sides :int):
+    dice = [
+        str(random.choice(range(1, number_of_sides + 1)))
+        for _ in range(number_of_dice)
+    ]
+    await ctx.send(', '.join(dice))
 
-@client.event
-async def on_member_join(member):
-    await member.create_dm
-    await member.dem_channel.send(
-            f"Hej {member.name}!"
-        )
+@bot.command(name="attendance", help="Records attending students.")
+async def att(ctx):
+    guild = discord.utils.find(lambda g: g.name == GUILD, bot.guilds)
+    members = '\n - '.join([member.name for member in guild.members])
+    channel = ctx.channel
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-    quotes = [
-            "Life, don't talk to me about life."
-            ,
-            "Just because you're paranoid doesn't mean that they aren't after you."
-            ,
-            "I say it's perfectly heartless your eating muffins at all, under the circumstances."
-            ]
+    await channel.send("Hej alla :)\nAttending: \n - "+members)
 
-    if message.content == "test":
-        response = random.choice(quotes)
-        await message.channel.send(response)
-    elif message.content == "raise-exception":
-        raise discord.DiscordException
+    print(f'Guild Members:\n - {members}')
+    f = open('attendance_test.txt', 'a')
+    f.write(members)
+    f.close
 
-@client.event
-async def on_error(event, *args, **kwargs):
-    with open('err.log', 'a') as f:
-        if event == 'on_message':
-            f.write(f'Unhandled message: {args[0]}\n')
-        else:
-            raise
-
-
-client.run(TOKEN)
+bot.run(TOKEN)
