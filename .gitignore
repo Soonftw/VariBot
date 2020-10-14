@@ -4,6 +4,7 @@
 
 # Ignore log files
 *.log
+attendance*
 
 # Ignore environment variables
 *.env
