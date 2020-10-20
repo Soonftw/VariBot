@@ -11,17 +11,19 @@ import discord
 load_dotenv()
 
 #Environment variables
-TOKEN = os.getenv("DISCORD_TOKEN")
-#GUILD = os.getenv("DISCORD_GUILD")
-GUILD = os.getenv("TEST_GUILD")
-#CHANNEL = os.getenv("STD_CHANNEL_ID")
-CHANNEL = os.getenv("TEST_CHANNEL")
+TOKEN = os.getenv("TOKEN")
+#GUILD = os.getenv("TEST_GUILD_NAME")
+GUILD = os.getenv("GUILD_NAME")
+#CHANNEL = os.getenv("TEST_CHANNEL_ID")
+CHANNEL = os.getenv("CHANNEL_ID")
 intents = discord.Intents.default()
 intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-#Bot commands
+#------------Bot commands------------
+
+# When bot is ready
 @bot.event
 async def on_ready():
     guild = discord.utils.get(bot.guilds, name=GUILD)
@@ -33,6 +35,22 @@ async def on_ready():
         f'Guild Members:\n - {members}'
     )
 
+# When user joins voice channel
+@bot.event
+async def on_voice_state_update(member, before, after):
+    currentDate = dateTime.datetime.now().replace(microsecond=0)
+
+    if currentDate.strftime("%A") == "Monday":
+        startTime = time(13, 30, 00)
+    elif currentDate.strftime("%A") == "Tuesday":
+        startTime = time(11, 15, 00) 
+
+    if (before.VoiceState == None and after.VoiceState != None):
+        pass
+    elif (after.VoiceState == None):
+        pass
+   
+# Roll dice
 @bot.command(name='roll_dice', help='Simulates rolling dice.')
 async def roll(ctx, number_of_dice :int, number_of_sides :int):
     dice = [
@@ -41,6 +59,7 @@ async def roll(ctx, number_of_dice :int, number_of_sides :int):
     ]
     await ctx.send(', '.join(dice))
 
+# Take attendance
 @bot.command(name="attendance", help="Records attending students.")
 async def att(ctx):
     #Kolla hur ctx fungerar
