@@ -38,18 +38,21 @@ async def on_ready():
 # When user joins voice channel
 @bot.event
 async def on_voice_state_update(member, before, after):
-    currentDate = dateTime.datetime.now().replace(microsecond=0)
+    currentDate = datetime.datetime.now().replace(microsecond=0)
 
     if currentDate.strftime("%A") == "Monday":
-        startTime = time(13, 30, 00)
+        startTime = datetime.datetime(1234,12.12,13, 30, 00)
     elif currentDate.strftime("%A") == "Tuesday":
-        startTime = time(11, 15, 00) 
+        startTime = datetime.datetime(1234,12,12,11, 15, 00) 
 
-    if (before.VoiceState == None and after.VoiceState != None):
+    if (before.channel == None and after.channel != None):
+        currentTime = datetime.datetime.now().replace(microsecond=0)
+        timeDelta = currentTime - startTime
+        print(timeDelta)
+
+    elif (after == None):
         pass
-    elif (after.VoiceState == None):
-        pass
-   
+
 # Roll dice
 @bot.command(name='roll_dice', help='Simulates rolling dice.')
 async def roll(ctx, number_of_dice :int, number_of_sides :int):
@@ -69,7 +72,7 @@ async def att(ctx):
     date = str(datetime.datetime.today()).split(" ")[0]
     fileName = "attendance_"+date+".txt"
 
-    await channel.send("Närvarande är: \n"+members)
+    await channel.send("NÃÂÃÂ¤rvarande ÃÂÃÂ¤r: \n"+members)
     f = open(fileName, 'w')
     f.write(members)
     f.close
